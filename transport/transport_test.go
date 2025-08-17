@@ -63,8 +63,7 @@ func (m *mockSessionManager) DequeueMessageForSend(ctx context.Context, sessionI
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	case msg, ok := <-ch:
-		if msg == nil && !ok {
-			// There are no new messages and the chan has been closed, indicating that the request may need to be terminated.
+		if !ok {
 			return nil, pkg.ErrSendEOF
 		}
 		return msg, nil
