@@ -148,8 +148,7 @@ func (s *State) dequeueMessage(ctx context.Context) ([]byte, error) {
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	case msg, ok := <-s.sendChan:
-		if msg == nil && !ok {
-			// There are no new messages and the chan has been closed, indicating that the request may need to be terminated.
+		if !ok {
 			return nil, pkg.ErrSendEOF
 		}
 		return msg, nil
