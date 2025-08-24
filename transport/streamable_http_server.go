@@ -213,6 +213,8 @@ func (t *streamableHTTPServerTransport) handlePost(w http.ResponseWriter, r *htt
 	}
 
 	ctx := r.Context()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
 	// For InitializeRequest HTTP response
 	if t.stateMode == Stateful {
