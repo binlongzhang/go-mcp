@@ -74,6 +74,7 @@ func WithGenSessionIDFunc(genSessionID func(context.Context) string) Option {
 	}
 }
 
+type ToolFilter func(context.Context, []*protocol.Tool) []*protocol.Tool
 type Server struct {
 	transport transport.ServerTransport
 
@@ -98,6 +99,8 @@ type Server struct {
 	genSessionID func(ctx context.Context) string
 
 	globalMiddlewares []ToolMiddleware
+
+	toolFilters []ToolFilter
 }
 
 func NewServer(t transport.ServerTransport, opts ...Option) (*Server, error) {
@@ -140,6 +143,16 @@ func (server *Server) Run() error {
 		return fmt.Errorf("init mcp server transpor run fail: %w", err)
 	}
 	return nil
+}
+
+// AddToolFilter 添加设置过滤器的方法
+func (server *Server) AddToolFilter(filter ToolFilter) {
+	server.toolFilters = append(server.toolFilters, filter)
+}
+
+// ClearToolFilters 清除所有过滤器
+func (server *Server) ClearToolFilters() {
+	server.toolFilters = nil
 }
 
 type toolEntry struct {

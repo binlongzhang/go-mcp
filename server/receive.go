@@ -139,7 +139,7 @@ func (server *Server) receiveRequest(ctx context.Context, sessionID string, requ
 	case protocol.ResourcesUnsubscribe:
 		result, err = server.handleRequestWithUnSubscribeResourceChange(sessionID, request.RawParams)
 	case protocol.ToolsList:
-		result, err = server.handleRequestWithListTools(request.RawParams)
+		result, err = server.handleRequestWithListTools(ctx, request.RawParams)
 	case protocol.ToolsCall:
 		result, err = server.handleRequestWithCallTool(ctx, request.RawParams)
 	default:
