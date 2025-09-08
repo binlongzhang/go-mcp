@@ -75,6 +75,7 @@ func WithGenSessionIDFunc(genSessionID func(context.Context) string) Option {
 }
 
 type ToolFilter func(context.Context, []*protocol.Tool) []*protocol.Tool
+
 type Server struct {
 	transport transport.ServerTransport
 
