@@ -74,6 +74,8 @@ func WithGenSessionIDFunc(genSessionID func(context.Context) string) Option {
 	}
 }
 
+type ToolFilter func(context.Context, []*protocol.Tool) []*protocol.Tool
+
 type Server struct {
 	transport transport.ServerTransport
 
@@ -98,6 +100,8 @@ type Server struct {
 	genSessionID func(ctx context.Context) string
 
 	globalMiddlewares []ToolMiddleware
+
+	toolFilters ToolFilter
 }
 
 func NewServer(t transport.ServerTransport, opts ...Option) (*Server, error) {
@@ -140,6 +144,10 @@ func (server *Server) Run() error {
 		return fmt.Errorf("init mcp server transpor run fail: %w", err)
 	}
 	return nil
+}
+
+func (server *Server) SetToolFilter(filter ToolFilter) {
+	server.toolFilters = filter
 }
 
 type toolEntry struct {

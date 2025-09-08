@@ -219,7 +219,7 @@ func (server *Server) handleRequestWithUnSubscribeResourceChange(sessionID strin
 	return protocol.NewUnsubscribeResult(), nil
 }
 
-func (server *Server) handleRequestWithListTools(rawParams json.RawMessage) (*protocol.ListToolsResult, error) {
+func (server *Server) handleRequestWithListTools(ctx context.Context, rawParams json.RawMessage) (*protocol.ListToolsResult, error) {
 	if server.capabilities.Tools == nil {
 		return nil, pkg.ErrServerNotSupport
 	}
@@ -236,6 +236,10 @@ func (server *Server) handleRequestWithListTools(rawParams json.RawMessage) (*pr
 		tools = append(tools, entry.tool)
 		return true
 	})
+	// Tool List Filter hook
+	if server.toolFilters != nil {
+		tools = server.toolFilters(ctx, tools)
+	}
 	if server.paginationLimit > 0 {
 		resourcesToReturn, nextCursor, err := protocol.PaginationLimit(tools, request.Cursor, server.paginationLimit)
 		return &protocol.ListToolsResult{
