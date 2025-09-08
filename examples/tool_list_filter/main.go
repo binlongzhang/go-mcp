@@ -104,7 +104,7 @@ func main() {
 		}, nil
 	})
 	//Filtering tools
-	srv.AddToolFilter(func(ctx context.Context, tools []*protocol.Tool) []*protocol.Tool {
+	srv.SetToolFilter(func(ctx context.Context, tools []*protocol.Tool) []*protocol.Tool {
 		return []*protocol.Tool{
 			tool1,
 			tool2,

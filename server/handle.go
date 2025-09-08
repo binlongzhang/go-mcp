@@ -238,9 +238,7 @@ func (server *Server) handleRequestWithListTools(ctx context.Context, rawParams 
 	})
 	// Tool List Filter hook
 	if server.toolFilters != nil {
-		for _, filter := range server.toolFilters {
-			tools = filter(ctx, tools)
-		}
+		tools = server.toolFilters(ctx, tools)
 	}
 	if server.paginationLimit > 0 {
 		resourcesToReturn, nextCursor, err := protocol.PaginationLimit(tools, request.Cursor, server.paginationLimit)

@@ -100,7 +100,7 @@ type Server struct {
 
 	globalMiddlewares []ToolMiddleware
 
-	toolFilters []ToolFilter
+	toolFilters ToolFilter
 }
 
 func NewServer(t transport.ServerTransport, opts ...Option) (*Server, error) {
@@ -145,14 +145,8 @@ func (server *Server) Run() error {
 	return nil
 }
 
-// AddToolFilter 添加设置过滤器的方法
-func (server *Server) AddToolFilter(filter ToolFilter) {
-	server.toolFilters = append(server.toolFilters, filter)
-}
-
-// ClearToolFilters 清除所有过滤器
-func (server *Server) ClearToolFilters() {
-	server.toolFilters = nil
+func (server *Server) SetToolFilter(filter ToolFilter) {
+	server.toolFilters = filter
 }
 
 type toolEntry struct {
