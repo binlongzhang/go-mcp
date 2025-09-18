@@ -19,18 +19,18 @@ func Test_Validate(t *testing.T) {
 		// string integer number boolean
 		{"", args{data: "ABC", schema: Property{Type: String}}, true},
 		{"", args{data: 123, schema: Property{Type: String}}, false},
-		{"", args{data: "a", schema: Property{Type: String, Enum: []string{"a", "b", "c"}}}, true},
-		{"", args{data: "d", schema: Property{Type: String, Enum: []string{"a", "b", "c"}}}, false},
+		{"", args{data: "a", schema: Property{Type: String, Enum: []any{"a", "b", "c"}}}, true},
+		{"", args{data: "d", schema: Property{Type: String, Enum: []any{"a", "b", "c"}}}, false},
 		{"", args{data: 123, schema: Property{Type: Integer}}, true},
 		{"", args{data: 123.4, schema: Property{Type: Integer}}, false},
-		{"", args{data: 1, schema: Property{Type: Integer, Enum: []string{"1", "2", "3"}}}, true},
-		{"", args{data: 4, schema: Property{Type: Integer, Enum: []string{"1", "2", "3"}}}, false},
+		{"", args{data: 1, schema: Property{Type: Integer, Enum: []any{1, 2, 3}}}, true},
+		{"", args{data: 4, schema: Property{Type: Integer, Enum: []any{1, 2, 3}}}, false},
 		{"", args{data: "ABC", schema: Property{Type: Number}}, false},
 		{"", args{data: 123, schema: Property{Type: Number}}, true},
-		{"", args{data: 1.1, schema: Property{Type: Number, Enum: []string{"1.1", "2.2", "3.3"}}}, true},
-		{"", args{data: 4.4, schema: Property{Type: Number, Enum: []string{"1.1", "2.2", "3.3"}}}, false},
-		{"", args{data: 1, schema: Property{Type: Number, Enum: []string{"1", "2", "3"}}}, true},
-		{"", args{data: 4, schema: Property{Type: Number, Enum: []string{"1", "2", "3"}}}, false},
+		{"", args{data: 1.1, schema: Property{Type: Number, Enum: []any{1.1, 2.2, 3.3}}}, true},
+		{"", args{data: 4.4, schema: Property{Type: Number, Enum: []any{1.1, 2.2, 3.3}}}, false},
+		{"", args{data: 1, schema: Property{Type: Number, Enum: []any{1, 2, 3}}}, true},
+		{"", args{data: 4, schema: Property{Type: Number, Enum: []any{1, 2, 3}}}, false},
 		{"", args{data: false, schema: Property{Type: Boolean}}, true},
 		{"", args{data: 123, schema: Property{Type: Boolean}}, false},
 		{"", args{data: nil, schema: Property{Type: Null}}, true},
@@ -48,22 +48,22 @@ func Test_Validate(t *testing.T) {
 		}, false},
 		{"", args{
 			data: []any{"a"}, schema: Property{
-				Type: Array, Items: &Property{Type: String, Enum: []string{"a", "b", "c"}},
+				Type: Array, Items: &Property{Type: String, Enum: []any{"a", "b", "c"}},
 			},
 		}, true},
 		{"", args{
 			data: []any{"a", "b", "c"}, schema: Property{
-				Type: Array, Items: &Property{Type: String, Enum: []string{"a", "b", "c"}},
+				Type: Array, Items: &Property{Type: String, Enum: []any{"a", "b", "c"}},
 			},
 		}, true},
 		{"", args{
 			data: []any{"d"}, schema: Property{
-				Type: Array, Items: &Property{Type: String, Enum: []string{"a", "b", "c"}},
+				Type: Array, Items: &Property{Type: String, Enum: []any{"a", "b", "c"}},
 			},
 		}, false},
 		{"", args{
 			data: []any{"a", "b", "c", "d"}, schema: Property{
-				Type: Array, Items: &Property{Type: String, Enum: []string{"a", "b", "c"}},
+				Type: Array, Items: &Property{Type: String, Enum: []any{"a", "b", "c"}},
 			},
 		}, false},
 		{"", args{
@@ -78,22 +78,22 @@ func Test_Validate(t *testing.T) {
 		}, false},
 		{"", args{
 			data: []any{1}, schema: Property{
-				Type: Array, Items: &Property{Type: Integer, Enum: []string{"1", "2", "3"}},
+				Type: Array, Items: &Property{Type: Integer, Enum: []any{1, 2, 3}},
 			},
 		}, true},
 		{"", args{
 			data: []any{1, 2, 3}, schema: Property{
-				Type: Array, Items: &Property{Type: Integer, Enum: []string{"1", "2", "3"}},
+				Type: Array, Items: &Property{Type: Integer, Enum: []any{1, 2, 3}},
 			},
 		}, true},
 		{"", args{
 			data: []any{1, 2, 3, 4}, schema: Property{
-				Type: Array, Items: &Property{Type: Integer, Enum: []string{"1", "2", "3"}},
+				Type: Array, Items: &Property{Type: Integer, Enum: []any{1, 2, 3}},
 			},
 		}, false},
 		{"", args{
 			data: []any{4}, schema: Property{
-				Type: Array, Items: &Property{Type: Integer, Enum: []string{"1", "2", "3"}},
+				Type: Array, Items: &Property{Type: Integer, Enum: []any{1, 2, 3}},
 			},
 		}, false},
 		// object
@@ -136,11 +136,11 @@ func Test_Validate(t *testing.T) {
 			"array":      []any{1, 2, 3},
 		}, schema: Property{
 			Type: ObjectT, Properties: map[string]*Property{
-				"string":     {Type: String, Enum: []string{"a", "b", "c"}},
-				"integer":    {Type: Integer, Enum: []string{"1", "2", "3"}},
-				"number":     {Type: Number, Enum: []string{"1.1", "2.2", "3.3"}},
-				"number4Int": {Type: Number, Enum: []string{"1", "2", "3"}},
-				"array":      {Type: Array, Items: &Property{Type: Number}, Enum: []string{"1", "2", "3"}},
+				"string":     {Type: String, Enum: []any{"a", "b", "c"}},
+				"integer":    {Type: Integer, Enum: []any{1, 2, 3}},
+				"number":     {Type: Number, Enum: []any{1.1, 2.2, 3.3}},
+				"number4Int": {Type: Number, Enum: []any{1, 2, 3}},
+				"array":      {Type: Array, Items: &Property{Type: Number}, Enum: []any{1, 2, 3}},
 			},
 			Required: []string{"string"},
 		}}, true},
@@ -152,11 +152,11 @@ func Test_Validate(t *testing.T) {
 			"array":      []any{4},
 		}, schema: Property{
 			Type: ObjectT, Properties: map[string]*Property{
-				"string":     {Type: String, Enum: []string{"a", "b", "c"}},
-				"integer":    {Type: Integer, Enum: []string{"1", "2", "3"}},
-				"number":     {Type: Number, Enum: []string{"1.1", "2.2", "3.3"}},
-				"number4Int": {Type: Number, Enum: []string{"1", "2", "3"}},
-				"array":      {Type: Array, Items: &Property{Type: Number}, Enum: []string{"1", "2", "3"}},
+				"string":     {Type: String, Enum: []any{"a", "b", "c"}},
+				"integer":    {Type: Integer, Enum: []any{1, 2, 3}},
+				"number":     {Type: Number, Enum: []any{1.1, 2.2, 3.3}},
+				"number4Int": {Type: Number, Enum: []any{1, 2, 3}},
+				"array":      {Type: Array, Items: &Property{Type: Number}, Enum: []any{1, 2, 3}},
 			},
 			Required: []string{"string"},
 		}}, false},

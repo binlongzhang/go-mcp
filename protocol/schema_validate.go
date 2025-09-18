@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"strconv"
 
 	"github.com/ThinkInAIXYZ/go-mcp/pkg"
 )
@@ -57,24 +56,27 @@ func validate(schema Property, data any) bool {
 	case String:
 		str, ok := data.(string)
 		if ok {
-			return validateEnumProperty[string](str, schema.Enum, func(value string, enumValue string) bool {
-				return value == enumValue
+			return validateEnumProperty[string](str, schema.Enum, func(value string, enumValue any) bool {
+				if enumStr, ok := enumValue.(string); ok {
+					return value == enumStr
+				}
+				return false
 			})
 		}
 		return false
 	case Number: // float64 and int
 		if num, ok := data.(float64); ok {
-			return validateEnumProperty[float64](num, schema.Enum, func(value float64, enumValue string) bool {
-				if enumNum, err := strconv.ParseFloat(enumValue, 64); err == nil && value == enumNum {
-					return true
+			return validateEnumProperty[float64](num, schema.Enum, func(value float64, enumValue any) bool {
+				if enumFloat, ok := enumValue.(float64); ok {
+					return value == enumFloat
 				}
 				return false
 			})
 		}
 		if num, ok := data.(int); ok {
-			return validateEnumProperty[int](num, schema.Enum, func(value int, enumValue string) bool {
-				if enumNum, err := strconv.Atoi(enumValue); err == nil && value == enumNum {
-					return true
+			return validateEnumProperty[int](num, schema.Enum, func(value int, enumValue any) bool {
+				if enumInt, ok := enumValue.(int); ok {
+					return value == enumInt
 				}
 				return false
 			})
@@ -87,9 +89,12 @@ func validate(schema Property, data any) bool {
 		// Golang unmarshals all numbers as float64, so we need to check if the float64 is an integer
 		if num, ok := data.(float64); ok {
 			if num == float64(int64(num)) {
-				return validateEnumProperty[float64](num, schema.Enum, func(value float64, enumValue string) bool {
-					if enumNum, err := strconv.ParseFloat(enumValue, 64); err == nil && value == enumNum {
-						return true
+				return validateEnumProperty[float64](num, schema.Enum, func(value float64, enumValue any) bool {
+					if enumFloat, ok := enumValue.(float64); ok {
+						return value == enumFloat
+					}
+					if enumInt, ok := enumValue.(int); ok {
+						return value == float64(enumInt)
 					}
 					return false
 				})
@@ -98,18 +103,21 @@ func validate(schema Property, data any) bool {
 		}
 
 		if num, ok := data.(int); ok {
-			return validateEnumProperty[int](num, schema.Enum, func(value int, enumValue string) bool {
-				if enumNum, err := strconv.Atoi(enumValue); err == nil && value == enumNum {
-					return true
+			return validateEnumProperty[int](num, schema.Enum, func(value int, enumValue any) bool {
+				if enumInt, ok := enumValue.(int); ok {
+					return value == enumInt
 				}
 				return false
 			})
 		}
 
 		if num, ok := data.(int64); ok {
-			return validateEnumProperty[int64](num, schema.Enum, func(value int64, enumValue string) bool {
-				if enumNum, err := strconv.Atoi(enumValue); err == nil && value == int64(enumNum) {
-					return true
+			return validateEnumProperty[int64](num, schema.Enum, func(value int64, enumValue any) bool {
+				if enumInt, ok := enumValue.(int); ok {
+					return value == int64(enumInt)
+				}
+				if enumInt64, ok := enumValue.(int64); ok {
+					return value == enumInt64
 				}
 				return false
 			})
@@ -154,7 +162,7 @@ func validateArray(schema Property, data any) bool {
 	return true
 }
 
-func validateEnumProperty[T any](data T, enum []string, compareFunc func(T, string) bool) bool {
+func validateEnumProperty[T any](data T, enum []any, compareFunc func(T, any) bool) bool {
 	for _, enumValue := range enum {
 		if compareFunc(data, enumValue) {
 			return true
