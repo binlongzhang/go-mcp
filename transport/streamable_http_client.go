@@ -39,6 +39,12 @@ func WithStreamableHTTPClientOptionLogger(log pkg.Logger) StreamableHTTPClientTr
 	}
 }
 
+func WithStreamableHTTPClientOptionHeader(headers map[string]string) StreamableHTTPClientTransportOption {
+	return func(t *streamableHTTPClientTransport) {
+		t.headers = headers
+	}
+}
+
 type streamableHTTPClientTransport struct {
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -53,6 +59,7 @@ type streamableHTTPClientTransport struct {
 	client         *http.Client
 
 	sseInFlyConnect sync.WaitGroup
+	headers         map[string]string
 }
 
 func NewStreamableHTTPClientTransport(serverURL string, opts ...StreamableHTTPClientTransportOption) (ClientTransport, error) {
@@ -71,6 +78,7 @@ func NewStreamableHTTPClientTransport(serverURL string, opts ...StreamableHTTPCl
 		logger:         pkg.DefaultLogger,
 		receiveTimeout: time.Second * 30,
 		client:         http.DefaultClient,
+		headers:        make(map[string]string),
 	}
 
 	for _, opt := range opts {
@@ -100,6 +108,10 @@ func (t *streamableHTTPClientTransport) Send(ctx context.Context, msg Message) e
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json, text/event-stream")
+
+	for key, value := range t.headers {
+		req.Header.Set(key, value)
+	}
 
 	if sessionID := t.sessionID.Load(); sessionID != "" {
 		req.Header.Set(sessionIDHeader, sessionID)
